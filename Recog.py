@@ -1,34 +1,40 @@
 import cv2
 import numpy as np
 
-
+# Load the image
 image = cv2.imread('table_image.jpg')
-hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-# Определение диапазона синего цвета в HSV
-lower_blue = np.array([90, 50, 50])
-upper_blue = np.array([130, 255, 255])
+# Define the regions of interest (x, y, width, height)
+regions_of_interest = [
+    (100, 100, 200, 200),
+    (300, 200, 150, 250),
+]
 
-# Применение цветового фильтра для обнаружения синего фона
-mask = cv2.inRange(hsv, lower_blue, upper_blue)
+# Convert the image to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# Применение морфологической операции для удаления шума
+# Apply a color filter to detect white color
+lower_white = np.array([200, 200, 200])
+upper_white = np.array([255, 255, 255])
+mask = cv2.inRange(image, lower_white, upper_white)
+
+# Apply morphological operations to remove noise
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=2)
 
-# Обнаружение контуров
+# Find contours on the processed image
 contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Фильтрация контуров по площади
-filtered_contours = []
+# Iterate over the contours and draw rectangles only within the specified regions of interest
 for contour in contours:
-    area = cv2.contourArea(contour)
-    if area > 1000:  # Подберите подходящий порог площади
-        filtered_contours.append(contour)
+    x, y, w, h = cv2.boundingRect(contour)
+    for roi in regions_of_interest:
+        roi_x, roi_y, roi_w, roi_h = roi
+        if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
+            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            break
 
-# Обводка найденных контуров на изображении
-cv2.drawContours(image, filtered_contours, -1, (0, 255, 0), 2)
-
-cv2.imshow('Detected Cards', image)
+# Display the result
+cv2.imshow('Processed Image', image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
