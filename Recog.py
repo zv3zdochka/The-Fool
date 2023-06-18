@@ -1,19 +1,20 @@
 import cv2
 import numpy as np
+import time
 
-target_resolution = (1600, 900)
+#t = time.time()
+target_resolution = (1920, 1080)
 
 # Load the image
-image = cv2.imread("im_many.png")
+image = cv2.imread("im3.png")
 
 # Resize to target_resolution
-image = cv2.resize(image, target_resolution)
 
 # Define the regions of interest (x, y, width, height)
 regions_of_interest = [
-    (0, 220, 170, 450),
-    (185, 175, 1450, 440),
-    (225, 500, 1500, 715),
+    (20, 250, 180, 550),
+    (200, 270, 1780, 560),
+    (30, 555, 1850, 900),
 ]
 
 # Convert the image to grayscale
@@ -45,12 +46,13 @@ for contour in contours:
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                 # Display the selected region in a separate window
-                selected_image = image[y:y+h, x:x+w]
-                cv2.imshow("Selected Image", selected_image)
+                #selected_image = image[y:y+h, x:x+w]
+                #cv2.imshow("Selected Image", selected_image)
                 #cv2.waitKey(0)
                 break
 
 # Display the result
+#print(time.time() - t)
 cv2.imshow('Processed Image', image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
