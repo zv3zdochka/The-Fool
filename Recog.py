@@ -1,58 +1,63 @@
 import cv2
 import numpy as np
-import time
+import mss
 
-#t = time.time()
-target_resolution = (1920, 1080)
+# Размеры экрана
+screen_width = 1920
+screen_height = 1080
 
-# Load the image
-image = cv2.imread("im3.png")
+# Разрешение целевого изображения
+target_resolution = (screen_width, screen_height)
 
-# Resize to target_resolution
-
-# Define the regions of interest (x, y, width, height)
+# Определение областей интереса (x, y, ширина, высота)
 regions_of_interest = [
     (20, 250, 180, 550),
     (200, 270, 1780, 560),
     (30, 555, 1850, 900),
 ]
 
-# Convert the image to grayscale
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# Минимальные и максимальные разрешенные размеры прямоугольников
+min_rectangle_size = 80  # Минимальная ширина или высота
+max_rectangle_size = 400  # Максимальная ширина или высота
 
-# Apply a color filter to detect white color
-lower_white = np.array([220, 220, 220])
-upper_white = np.array([255, 255, 255])
-mask = cv2.inRange(image, lower_white, upper_white)
 
-# Apply morphological operations to remove noise
-kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=0)
+def capture_screen():
+    with mss.mss() as sct:
+        monitor = sct.monitors[1]  # Индекс монитора, с которого вы хотите получить снимок
+        screenshot = sct.grab(monitor)
+        image = np.array(screenshot)
+        image = cv2.resize(image, (screen_width, screen_height))
+        image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+        return image
 
-# Find contours on the processed image
-contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Minimum and maximum allowed dimensions for rectangles
-min_rectangle_size = 80  # Minimum width or height
-max_rectangle_size = 400  # Maximum width or height
+while True:
+    # Получение изображения с экрана
+    image = capture_screen()
 
-# Iterate over the contours and draw rectangles only within the specified regions of interest
-for contour in contours:
-    x, y, w, h = cv2.boundingRect(contour)
-    if min_rectangle_size <= w <= max_rectangle_size and min_rectangle_size <= h <= max_rectangle_size:
-        for roi in regions_of_interest:
-            roi_x, roi_y, roi_w, roi_h = roi
-            if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
-                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    # Преобразование изображения в оттенки серого
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-                # Display the selected region in a separate window
-                #selected_image = image[y:y+h, x:x+w]
-                #cv2.imshow("Selected Image", selected_image)
-                #cv2.waitKey(0)
-                break
+    # Применение фильтра для выделения белого цвета
+    lower_white = np.array([220, 220, 220])
+    upper_white = np.array([255, 255, 255])
+    mask = cv2.inRange(image, lower_white, upper_white)
 
-# Display the result
-#print(time.time() - t)
-cv2.imshow('Processed Image', image)
-cv2.waitKey(0)
+    # Применение морфологических операций для удаления шума
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=0)
+
+    # Нахождение контуров на обработанном изображении
+    contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Вывод координат квадратов
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        if min_rectangle_size <= w <= max_rectangle_size and min_rectangle_size <= h <= max_rectangle_size:
+            for roi in regions_of_interest:
+                roi_x, roi_y, roi_w, roi_h = roi
+                if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
+                    print("Square coordinates:", x, y, x + w, y + h)
+
+# Закрытие окон
 cv2.destroyAllWindows()
