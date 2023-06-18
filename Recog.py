@@ -1,13 +1,12 @@
 import cv2
 import numpy as np
 
-
 target_resolution = (1600, 900)
 
 # Load the image
 image = cv2.imread("im_many.png")
 
-#resize to target_resolution
+# Resize to target_resolution
 image = cv2.resize(image, target_resolution)
 
 # Define the regions of interest (x, y, width, height)
@@ -44,8 +43,12 @@ for contour in contours:
             roi_x, roi_y, roi_w, roi_h = roi
             if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                break
 
+                # Display the selected region in a separate window
+                selected_image = image[y:y+h, x:x+w]
+                cv2.imshow("Selected Image", selected_image)
+                #cv2.waitKey(0)
+                break
 
 # Display the result
 cv2.imshow('Processed Image', image)
