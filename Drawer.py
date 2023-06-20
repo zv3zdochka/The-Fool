@@ -1,48 +1,49 @@
-import tkinter as tk
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtGui import QPainter, QBrush, QColor, QPen
+from PyQt5.QtCore import Qt, QTimer, QRect
 
-class RectangleAnimator:
-    def __init__(self):
-        self.rectangle_coordinates = []
-        self.root = tk.Tk()
-        self.setup_window()
-        self.create_canvas()
+class DrawingWindow(QMainWindow):
+    def __init__(self, coordinates):
+        super().__init__()
+        self.setWindowTitle("Transparent Drawing Window")
+        self.setGeometry(0, 0, QApplication.desktop().screenGeometry().width(), QApplication.desktop().screenGeometry().height())
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
-        # Start the main loop of the program
-        self.main_loop()
+        self.painter = QPainter()
+        self.painter.setRenderHint(QPainter.Antialiasing)
 
-        self.root.mainloop()
+        self.pen_color = QColor(255, 0, 0)  # Set the initial pen color to red
+        self.pen_width = 4  # Set the initial pen width to 4
 
-    def setup_window(self):
-        self.root.wait_visibility(self.root)
-        self.root.wm_attributes("-fullscreen", 1)
-        self.root.wm_attributes("-transparentcolor", self.root['bg'])
+        self.coordinates = coordinates  # Store the coordinates for drawing rectangles
 
-        self.frame = tk.Frame(self.root)
-        self.frame.pack()
+        self.draw_timer = QTimer()
+        self.draw_timer.timeout.connect(self.update)
+        self.draw_timer.start(10)  # Update the window every 10 milliseconds
 
-    def create_canvas(self):
-        self.canvas = tk.Canvas(self.frame, width=self.root.winfo_width(), height=self.root.winfo_height())
-        self.canvas.pack()
+    def paintEvent(self, event):
+        self.painter.begin(self)
+        self.painter.setPen(Qt.NoPen)
+        self.painter.setBrush(QBrush(Qt.transparent))
+        self.painter.drawRect(QRect(0, 0, self.width(), self.height()))  # Draw a transparent background
 
-    def draw_rectangle(self, x1, y1, x2, y2):
-        self.canvas.create_rectangle(x1, y1, x2, y2, fill="", outline="yellow", width=5)
+        self.painter.setPen(QPen(QColor(self.pen_color), self.pen_width))
+        self.painter.setBrush(QBrush(Qt.transparent))
 
-    def clear_canvas(self):
-        self.canvas.delete("all")
+        for coord in self.coordinates:
+            x, y, width, height = coord
+            self.painter.drawRect(x, y, width, height)  # Draw rectangles using the provided coordinates
 
-    def update_coordinates(self, new_coordinates):
-        self.rectangle_coordinates = new_coordinates
+        self.painter.end()
 
-    def main_loop(self):
-        # Clear the canvas before each loop
-        self.clear_canvas()
+if __name__ == "__main__":
+    coordinates = [(100, 100, 200, 100), (300, 200, 150, 150), (500, 300, 100, 200)]
 
-        for coords in self.rectangle_coordinates:
-            # Draw the rectangle using the coordinates
-            self.draw_rectangle(*coords)
+    app = QApplication(sys.argv)
 
-        # Call the main_loop function again
-        self.root.after(1000, self.main_loop)
+    window = DrawingWindow(coordinates)  # Create an instance of the DrawingWindow class with the given coordinates
+    window.show()  # Display the window
 
-    def start(self):
-        RectangleAnimator()
+    sys.exit(app.exec_())  # Start the application event loop and exit when it's finished
