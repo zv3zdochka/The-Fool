@@ -2,12 +2,7 @@ import tkinter as tk
 
 class RectangleAnimator:
     def __init__(self):
-        self.rectangle_coordinates = [
-            (50, 25, 150, 75),
-            (100, 50, 200, 100),
-            (150, 75, 250, 125)
-        ]
-
+        self.rectangle_coordinates = []
         self.root = tk.Tk()
         self.setup_window()
         self.create_canvas()
@@ -35,6 +30,9 @@ class RectangleAnimator:
     def clear_canvas(self):
         self.canvas.delete("all")
 
+    def update_coordinates(self, new_coordinates):
+        self.rectangle_coordinates = new_coordinates
+
     def main_loop(self):
         # Clear the canvas before each loop
         self.clear_canvas()
@@ -46,3 +44,5 @@ class RectangleAnimator:
         # Call the main_loop function again
         self.root.after(1000, self.main_loop)
 
+    def start(self):
+        RectangleAnimator()
