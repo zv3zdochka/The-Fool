@@ -5,27 +5,27 @@ import mss
 
 class ScreenCapture:
     def __init__(self):
-        # Screen dimensions
+        # screen dimensions
         self.screen_width = 1920
-        self.screen_height = 108
+        self.screen_height = 1080
         self.target_resolution = (self.screen_width, self.screen_height)
 
-        # Regions of interest
+        # regions of interest
         self.regions_of_interest = [
             (20, 250, 180, 550),
             (200, 270, 1780, 560),
             (30, 555, 1850, 900),
         ]
 
-        # Minimum and maximum allowed rectangle sizes
+        # rectangle sizes
         self.min_rectangle_size = 80
         self.max_rectangle_size = 400
 
-        # Convert color values to grayscale
+        # convert color
         self.gray_lower_white = np.array([220, 220, 220])
         self.gray_upper_white = np.array([255, 255, 255])
 
-        # morphological operations
+        # morphological operation
         self.kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 
     def capture_screen(self):
@@ -38,16 +38,14 @@ class ScreenCapture:
             return image
 
     def process_screen(self, image):
-        # сonvert image to grayscale
+        # convert image to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # filter to extract white color
         mask = cv2.inRange(image, self.gray_lower_white, self.gray_upper_white)
 
-        # morphological operations to remove noise
+        # remove noise
         opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel, iterations=0)
 
-        # contours on the processed image
+        # find contours
         contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # coordinates of squares
@@ -64,17 +62,11 @@ class ScreenCapture:
 
     def run(self):
         while True:
-            # сapture screen image
+            # Capture screen image
             image = self.capture_screen()
             self.process_screen(image)
-
-            # Close windows
-            if cv2.waitKey(1) == 27:  # Esc key
-                break
-
         cv2.destroyAllWindows()
 
 
-
-# screen_capture = ScreenCapture()
-# screen_capture.run()
+screen_capture = ScreenCapture()
+screen_capture.run()
