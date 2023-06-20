@@ -76,5 +76,5 @@ class ScreenCapture:
 
 
 
-screen_capture = ScreenCapture()
-screen_capture.run()
+# screen_capture = ScreenCapture()
+# screen_capture.run()

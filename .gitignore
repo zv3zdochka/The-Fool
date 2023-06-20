@@ -159,3 +159,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 /table_image_1.jpg
+/im1.png
+/im2.png
+/im3.png
+/new_rubbish.py
+/rgb_m.jpg
+/rubbish.py
+/Test/
