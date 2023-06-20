@@ -6,7 +6,7 @@ import time
 target_resolution = (1920, 1080)
 
 # Load the image
-image = cv2.imread("im3.png")
+image = cv2.imread("im4.png")
 
 # Resize to target_resolution
 

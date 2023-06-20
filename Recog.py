@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import mss
 
-
 class ScreenCapture:
     def __init__(self):
         # screen dimensions
@@ -47,18 +46,21 @@ class ScreenCapture:
 
         # find contours
         contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        co_list = []
         # coordinates of squares
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
             if (
-                self.min_rectangle_size <= w <= self.max_rectangle_size
-                and self.min_rectangle_size <= h <= self.max_rectangle_size
+                    self.min_rectangle_size <= w <= self.max_rectangle_size
+                    and self.min_rectangle_size <= h <= self.max_rectangle_size
             ):
                 for roi in self.regions_of_interest:
                     roi_x, roi_y, roi_w, roi_h = roi
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
-                        print("Square coordinates:", x, y, x + w, y + h)
+                        co_list.append((x, y, x + w, y + h))
+                        print((x, y, x + w, y + h))
+        print(co_list)
+
 
     def run(self):
         while True:
@@ -67,6 +69,11 @@ class ScreenCapture:
             self.process_screen(image)
         cv2.destroyAllWindows()
 
+
+# if __name__ == "__main__":
+#     draw = Drawer.RectangleAnimator
+#     screen_capture = ScreenCapture()
+#     screen_capture.run()
 
 screen_capture = ScreenCapture()
 screen_capture.run()
