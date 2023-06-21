@@ -36,7 +36,7 @@ class ScreenCapture:
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
             return image
 
-    def process_screen(self, image):ad
+    def process_screen(self, image):
         # convert image to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         mask = cv2.inRange(image, self.gray_lower_white, self.gray_upper_white)
