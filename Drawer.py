@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QPainter, QBrush, QColor, QPen
 from PyQt5.QtCore import Qt, QTimer, QRect
 import random
-
+from Recog import ScreenCapture as Recognizer
 
 class DrawingWindow(QMainWindow):
     def __init__(self, coordinates):
@@ -44,20 +44,20 @@ class DrawingWindow(QMainWindow):
         self.update_coord()  # Update the coordinates
         QTimer.singleShot(1000, self.update)  # Schedule a repaint after 1 second
 
-    def update_coord(self, coords=0):
-        if coords != 0:
-            pass
+    def update_coord(self):
+        new_coord = R.run()
+        if new_coord is list:
+            self.coordinates = new_coord
         else:
-            self.coordinates = [
-            (random.randrange(0, 500), random.randrange(0, 500), random.randrange(0, 500), random.randrange(0, 500))]
+            self.coordinates = list(new_coord)
 
 
 if __name__ == "__main__":
-    coordinates = [(524, 474, 818-524, 689-474), (524, 367, 818-524, 473-367)]
+    s_coordinates = [(524, 474, 818-524, 689-474), (524, 367, 818-524, 473-367)]
 
     app = QApplication(sys.argv)
-
-    window = DrawingWindow(coordinates)  # Create an instance of the DrawingWindow class with the given coordinates
+    R = Recognizer()
+    window = DrawingWindow(s_coordinates)  # Create an instance of the DrawingWindow class with the given coordinates
     window.show()  # Display the window
 
     sys.exit(app.exec_())  # Start the application event loop and exit when it's finished

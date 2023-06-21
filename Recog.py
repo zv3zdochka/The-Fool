@@ -32,7 +32,7 @@ class ScreenCapture:
             monitor = sct.monitors[1]
             screenshot = sct.grab(monitor)
             image = np.array(screenshot)
-            image = cv2.resize(image, self.target_resolution)
+            image = cv2.resize(image, self.target_resolution)d .
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
             return image
 
@@ -57,17 +57,16 @@ class ScreenCapture:
                 for roi in self.regions_of_interest:
                     roi_x, roi_y, roi_w, roi_h = roi
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
-                        co_list.append((x, y, x + w, y + h))
-                        print((x, y, x + w, y + h))
-        print(co_list)
+                        co_list.append((x, y, w, h))
+                        print((x, y, w, h))
+        return co_list
 
 
     def run(self):
-        while True:
-            # Capture screen image
-            image = self.capture_screen()
-            self.process_screen(image)
-        cv2.destroyAllWindows()
+        # Capture screen image
+        image = self.capture_screen()
+        return self.process_screen(image)
+
 
 
 # if __name__ == "__main__":
@@ -75,5 +74,5 @@ class ScreenCapture:
 #     screen_capture = ScreenCapture()
 #     screen_capture.run()
 
-screen_capture = ScreenCapture()
-screen_capture.run()
+# screen_capture = ScreenCapture()
+# screen_capture.run()
