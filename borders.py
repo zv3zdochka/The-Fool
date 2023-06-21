@@ -6,7 +6,7 @@ import time
 target_resolution = (1920, 1080)
 
 # Load the image
-image = cv2.imread("im4.png")
+image = cv2.imread("im5.png")
 
 # Resize to target_resolution
 
@@ -44,12 +44,12 @@ for contour in contours:
             roi_x, roi_y, roi_w, roi_h = roi
             if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
+                print((x, y, x + w, y + h))
                 # Display the selected region in a separate window
                 #selected_image = image[y:y+h, x:x+w]
                 #cv2.imshow("Selected Image", selected_image)
                 #cv2.waitKey(0)
-                break
+                #break
 
 # Display the result
 #print(time.time() - t)
