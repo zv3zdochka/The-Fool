@@ -32,11 +32,11 @@ class ScreenCapture:
             monitor = sct.monitors[1]
             screenshot = sct.grab(monitor)
             image = np.array(screenshot)
-            image = cv2.resize(image, self.target_resolution)d .
+            image = cv2.resize(image, self.target_resolution)
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
             return image
 
-    def process_screen(self, image):
+    def process_screen(self, image):ad
         # convert image to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         mask = cv2.inRange(image, self.gray_lower_white, self.gray_upper_white)
