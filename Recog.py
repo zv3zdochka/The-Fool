@@ -36,6 +36,37 @@ class ScreenCapture:
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
             return image
 
+
+
+    def remove_nested_quads(self, coords_list):
+        result = []
+        n = len(coords_list)
+
+        for i in range(n):
+            quad = coords_list[i]
+            is_nested = False
+
+            for j in range(n):
+                if i != j:
+                    other_quad = coords_list[j]
+                    if self.is_quad_nested(quad, other_quad):
+                        is_nested = True
+                        break
+
+            if not is_nested:
+                result.append(quad)
+
+        return result
+
+    @staticmethod
+    def is_quad_nested(quad1, quad2):
+        x1, y1, w1, h1 = quad1
+        x2, y2, w2, h2 = quad2
+
+        if (x1 >= x2 and y1 >= y2 and x1 + w1 <= x2 + w2 and y1 + h1 <= y2 + h2):
+            return True
+
+        return False
     def process_screen(self, image):
         # convert image to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -59,7 +90,13 @@ class ScreenCapture:
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                         co_list.append((x, y, w, h))
                         print((x, y, w, h))
+        #result = self.remove_nested_quads(co_list)
+
+
+
+
         return co_list
+
 
 
     def run(self):
