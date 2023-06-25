@@ -1,17 +1,24 @@
-import subprocess
-from Drawer import RectangleAnimator
-def run_recognition():
-    process = subprocess.Popen(['python', 'Contur.py'], stdout=subprocess.PIPE)
-    while True:
-        output = process.stdout.readline()
-        if output == b'' and process.poll() is not None:
-            break
-        if output:
-            # Преобразование вывода в список координат
-            co_list = eval(output.decode())
-            # Создание экземпляра класса RectangleAnimator и передача списка координат
-            animator = RectangleAnimator(co_list)
-            # Запуск отрисовки
-            animator.start()
+import time
+import sched
+from Contur import ScreenContur
 
-run_recognition()
+
+class Play:
+    def __init__(self):
+        self.recog = ScreenContur()
+        self.scheduler = sched.scheduler(time.time, time.sleep)
+    def cards_co(self):
+
+
+    def my_function():
+        print("Вызвана функция")
+
+
+
+    def schedule_function():
+        my_function()
+        scheduler.enter(0.01, 1, schedule_function)  # Планируем вызов функции через 0.01 секунды (10 миллисекунд)
+
+    scheduler.enter(0, 1, schedule_function)
+
+    scheduler.run()
