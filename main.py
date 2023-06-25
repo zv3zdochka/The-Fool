@@ -1,7 +1,7 @@
 import subprocess
 from Drawer import RectangleAnimator
 def run_recognition():
-    process = subprocess.Popen(['python', 'Recog.py'], stdout=subprocess.PIPE)
+    process = subprocess.Popen(['python', 'Contur.py'], stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
         if output == b'' and process.poll() is not None:

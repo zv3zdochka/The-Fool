@@ -89,7 +89,7 @@ class ScreenCapture:
                     roi_x, roi_y, roi_w, roi_h = roi
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                         co_list.append((x, y, w, h))
-                        print((x, y, w, h))
+                        #print((x, y, w, h))
         #result = self.remove_nested_quads(co_list)
 
 
