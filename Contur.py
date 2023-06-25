@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 import mss
 
-class ScreenCapture:
+
+class ScreenContur:
     def __init__(self):
         # screen dimensions
         self.screen_width = 1920
@@ -27,6 +28,10 @@ class ScreenCapture:
         # morphological operation
         self.kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 
+        # lists
+        self.co_list = []
+        self.reg_cards = []
+        self.result = []
     def capture_screen(self):
         with mss.mss() as sct:
             monitor = sct.monitors[1]
@@ -35,8 +40,6 @@ class ScreenCapture:
             image = cv2.resize(image, self.target_resolution)
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
             return image
-
-
 
     def remove_nested_quads(self, coords_list):
         result = []
@@ -58,6 +61,13 @@ class ScreenCapture:
 
         return result
 
+    def remove_unwanted_reg_cards(self):
+        demi_cards = []
+        for i in self.reg_cards:
+            if i[0] in self.result:
+                demi_cards.append(i)
+        self.reg_cards = demi_cards
+
     @staticmethod
     def is_quad_nested(quad1, quad2):
         x1, y1, w1, h1 = quad1
@@ -67,6 +77,7 @@ class ScreenCapture:
             return True
 
         return False
+
     def process_screen(self, image):
         # convert image to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -77,7 +88,7 @@ class ScreenCapture:
 
         # find contours
         contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        co_list = []
+        self.co_list = []
         # coordinates of squares
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
@@ -88,16 +99,14 @@ class ScreenCapture:
                 for roi in self.regions_of_interest:
                     roi_x, roi_y, roi_w, roi_h = roi
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
-                        co_list.append((x, y, w, h))
-                        #print((x, y, w, h))
-        #result = self.remove_nested_quads(co_list)
+                        self.reg_cards.append([(x, y, w, h), image[y:y + h, x:x + w]])
+                        self.co_list.append((x, y, w, h))
 
-
-
-
-        return co_list
-
-
+        self.result = self.remove_nested_quads(self.co_list)
+        self.remove_unwanted_reg_cards()
+        print(self.result)
+        print(self.reg_cards)
+        return self.result
 
     def run(self):
         # Capture screen image
@@ -105,11 +114,7 @@ class ScreenCapture:
         return self.process_screen(image)
 
 
+if __name__ == "__main__":
+    screen_contour = ScreenContur()
+    result = screen_contour.run()
 
-# if __name__ == "__main__":
-#     draw = Drawer.RectangleAnimator
-#     screen_capture = ScreenCapture()
-#     screen_capture.run()
-
-# screen_capture = ScreenCapture()
-# screen_capture.run()
