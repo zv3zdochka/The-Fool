@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import mss
 
-class ScreenCapture:
+class ScreenContur:
     def __init__(self):
         # screen dimensions
         self.screen_width = 1920
@@ -90,12 +90,12 @@ class ScreenCapture:
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                         co_list.append((x, y, w, h))
                         #print((x, y, w, h))
-        #result = self.remove_nested_quads(co_list)
+        result = self.remove_nested_quads(co_list)
 
 
 
 
-        return co_list
+        return result
 
 
 
