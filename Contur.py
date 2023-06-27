@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import mss
-
+from Rank_recog import Rank
 
 class ScreenContur:
     def __init__(self):
@@ -102,12 +102,21 @@ class ScreenContur:
                         self.reg_cards.append([(x, y, w, h), image[y:y + h, x:x + w]])
                         self.co_list.append((x, y, w, h))
 
+                        print(rank.recog_rank(image[y:y + h, x:x + w]))
+                        # cv2.imshow('Изображение', image[y:y + h, x:x + w])
+                        # cv2.waitKey(0)
+                        # cv2.destroyAllWindows()
+
+
+
         self.result = self.remove_nested_quads(self.co_list)
         self.remove_unwanted_reg_cards()
-        print(self.result)
-        print(self.reg_cards)
+
         return self.result
 
+
+    def ret_ima_co(self):
+        return self.reg_cards
     def run(self):
         # Capture screen image
         image = self.capture_screen()
@@ -116,5 +125,6 @@ class ScreenContur:
 
 if __name__ == "__main__":
     screen_contour = ScreenContur()
+    rank = Rank()
     result = screen_contour.run()
 
