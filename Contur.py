@@ -125,6 +125,5 @@ class ScreenContur:
 
 if __name__ == "__main__":
     screen_contour = ScreenContur()
-    rank = Rank()
     result = screen_contour.run()
 
