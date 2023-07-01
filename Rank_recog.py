@@ -1,9 +1,12 @@
 import cv2
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\batsi\tessdata"
+
+
+path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.tesseract_cmd = path_to_tesseract
+
+
 class Rank:
-    def __init__(self):
-        pass
     def recog_rank(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.medianBlur(gray, 3)
