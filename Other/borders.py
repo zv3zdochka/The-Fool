@@ -4,30 +4,25 @@ import time
 
 import os
 
-folder_path = "Test"  # Укажите путь к папке, содержимое которой вы хотите пройти
+folder_path = "../Test"
 
-# Получаем список файлов и папок в указанной папке
 files = os.listdir(folder_path)
 
-# Проходим циклом по каждому элементу
 for file_name in files:
-    # Полный путь к текущему элементу (файлу или папке)
+
     full_path = os.path.join(folder_path, file_name)
     target_resolution = (1920, 1080)
     print(str(full_path))
     # Load the image
     image = cv2.imread(str(full_path))
 
-    # Resize to target_resolution
-
-    # Define the regions of interest (x, y, width, height)
     regions_of_interest = [
         (20, 250, 180, 550),
         (200, 270, 1780, 560),
         (30, 555, 1850, 900),
     ]
 
-    # Convert the image to grayscale
+
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Apply a color filter to detect white color
@@ -42,9 +37,9 @@ for file_name in files:
     # Find contours on the processed image
     contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Minimum and maximum allowed dimensions for rectangles
-    min_rectangle_size = 80  # Minimum width or height
-    max_rectangle_size = 400  # Maximum width or height
+
+    min_rectangle_size = 80
+    max_rectangle_size = 400
 
     # Iterate over the contours and draw rectangles only within the specified regions of interest
     for contour in contours:
@@ -60,8 +55,6 @@ for file_name in files:
                     # cv2.imshow("Selected Image", selected_image)
                     # cv2.waitKey(0)
                     # break
-
-    # Display the result
     # print(time.time() - t)
     image = cv2.resize(image, (1280, 720))
     cv2.imshow('Processed Image', image)

@@ -17,32 +17,32 @@ class DrawingWindow(QMainWindow):
         self.painter = QPainter()
         self.painter.setRenderHint(QPainter.Antialiasing)
 
-        self.pen_color = QColor(255, 0, 0)  # Set the initial pen color to red
-        self.pen_width = 4  # Set the initial pen width to 4
+        self.pen_color = QColor(255, 0, 0)
+        self.pen_width = 4
 
-        self.coordinates = coordinates  # Store the coordinates for drawing rectangles
+        self.coordinates = coordinates
 
         self.draw_timer = QTimer()
 
-        self.draw_timer.start(10)  # Update the window every 10 milliseconds
+        self.draw_timer.start(10)  # upd every 10 milliseconds
 
     def paintEvent(self, event):
         self.painter.begin(self)
         self.painter.setPen(Qt.NoPen)
         self.painter.setBrush(QBrush(Qt.transparent))
-        self.painter.drawRect(QRect(0, 0, self.width(), self.height()))  # Draw a transparent background
+        self.painter.drawRect(QRect(0, 0, self.width(), self.height()))  #transparent background
 
         self.painter.setPen(QPen(QColor(self.pen_color), self.pen_width))
         self.painter.setBrush(QBrush(Qt.transparent))
 
         for coord in self.coordinates:
             x, y, width, height = coord
-            self.painter.drawRect(x, y, width, height)  # Draw rectangles using the provided coordinates
+            self.painter.drawRect(x, y, width, height)  #
 
         self.painter.end()
 
-        self.update_coord()  # Update the coordinates
-        QTimer.singleShot(1000, self.update)  # Schedule a repaint after 1 second
+        self.update_coord()
+        QTimer.singleShot(1000, self.update)
 
     def update_coord(self):
         new_coord = R.run()
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     R = Recognizer()
-    window = DrawingWindow(s_coordinates)  # Create an instance of the DrawingWindow class with the given coordinates
-    window.show()  # Display the window
+    window = DrawingWindow(s_coordinates)
+    window.show()
 
-    sys.exit(app.exec_())  # Start the application event loop and exit when it's finished
+    sys.exit(app.exec_())
