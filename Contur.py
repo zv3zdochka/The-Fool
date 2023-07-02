@@ -1,3 +1,5 @@
+import random
+
 import cv2
 import numpy as np
 import mss
@@ -101,11 +103,11 @@ class ScreenContur:
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                         self.reg_cards.append([(x, y, w, h), image[y:y + h, x:x + w]])
                         self.co_list.append((x, y, w, h))
-
+                        cv2.imwrite(f'F_cards/output_image{random.randrange(0, 1000)}.jpg', image[y:y + h, x:x + w])
                         #print(rank.recog_rank(image[y:y + h, x:x + w]))
-                        cv2.imshow('Изображение', image[y:y + h, x:x + w])
-                        cv2.waitKey(0)
-                        cv2.destroyAllWindows()
+                        # cv2.imshow('Изображение', image[y:y + h, x:x + w])
+                        # cv2.waitKey(0)
+                        # cv2.destroyAllWindows()
 
 
 
