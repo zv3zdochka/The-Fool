@@ -13,29 +13,29 @@ class Play:
         self.player = ""
         self.event = Event()
         self.instructions = []
-        self.condition = False
-
+        self.found_cards = []
 
     def find_cards(self):  # Recognize cards
         pass
-
 
     def what_card(self):
         pass
 
     async def is_changes(self):
         if self.event.smt_happened():
-            asyncio.ensure_future(self.play())
-        await asyncio.sleep(1)#FPS
+            await self.play()
+        await asyncio.sleep(1)  # FPS
 
     async def play(self):
-        print("Функция play() запущена")
+        self.found_cards = self.recog.run()
+        print(self.found_cards)
+        # self.what_card()
 
 
+async def main():
+    game = Play()
+    await game.is_changes()
 
-game = Play()
-game.condition = True
-game.is_changes()
-loop = asyncio.get_event_loop()
-loop.run_forever()
-loop.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())

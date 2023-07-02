@@ -102,7 +102,7 @@ class ScreenContur:
                         self.reg_cards.append([(x, y, w, h), image[y:y + h, x:x + w]])
                         self.co_list.append((x, y, w, h))
 
-                        print(rank.recog_rank(image[y:y + h, x:x + w]))
+                        #print(rank.recog_rank(image[y:y + h, x:x + w]))
                         cv2.imshow('Изображение', image[y:y + h, x:x + w])
                         cv2.waitKey(0)
                         cv2.destroyAllWindows()
@@ -111,7 +111,7 @@ class ScreenContur:
 
         self.result = self.remove_nested_quads(self.co_list)
         self.remove_unwanted_reg_cards()
-
+        #return self.reg_cards
         return self.result
 
 
