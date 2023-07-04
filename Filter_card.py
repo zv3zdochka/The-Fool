@@ -1,103 +1,70 @@
 import cv2
 import numpy as np
 import os
-def extra_filter(image):
-    # Перевод изображения в оттенки серого
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Применение оператора Кэнни для обнаружения границ
-    edges = cv2.Canny(gray_image, 0, 150)
-
-    # Поиск контуров
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    merged_image = np.zeros_like(gray_image)
-
-    # Рисуем объединенный контур на изображении
-    cv2.drawContours(merged_image, contours, -1, (255), thickness=cv2.FILLED)
-
-    cv2.imshow('hello Image', merged_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    rotate(merged_image)
-
-def rotate(image):
-    gray = image
-
-    _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
-
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    largest_contour = max(contours, key=cv2.contourArea)
-    rect = cv2.minAreaRect(largest_contour)
-
-    box = cv2.boxPoints(rect)
-    box = np.intp(box)
-    width = int(rect[1][0])
-    height = int(rect[1][1])
-    angle = rect[2]
-    M = cv2.getRotationMatrix2D(rect[0], angle, 1)
-
-    result = cv2.warpAffine(image, M, (width, height))
-    cv2.imshow('rotate Image', result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
 
+class Filter:
+    def __init__(self):
+        self.image = None
 
-for files in os.walk("F_cards"):
-    for images in files[2]:
-        #image = cv2.imread(r"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\F_cards\output_image50.jpg")
-        image = cv2.imread(rf"F_cards\{images}")
+    def remove_extra_colors(self):
+        lower_gray = np.array([100, 100, 100], dtype=np.uint8)
+        upper_gray = np.array([190, 190, 190], dtype=np.uint8)
 
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        mask = cv2.inRange(self.image, lower_gray, upper_gray)
+
+        black_color = np.array([0, 0, 0], dtype=np.uint8)
+        self.image[mask != 0] = black_color
+
+    def cut_back(self):
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         largest_contour = max(contours, key=cv2.contourArea)
 
-        mask = np.zeros_like(image)
+        mask = np.zeros_like(self.image)
 
         cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
-        result = cv2.bitwise_and(image, mask)
-        cv2.imshow('Cropped Image', result)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        self.image = cv2.bitwise_and(self.image, mask)
 
-        image = result
-
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # fix a bit
+    def rotate(self):
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
 
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         largest_contour = max(contours, key=cv2.contourArea)
         rect = cv2.minAreaRect(largest_contour)
 
-        box = cv2.boxPoints(rect)
-        box = np.intp(box)
         width = int(rect[1][0])
         height = int(rect[1][1])
         angle = rect[2]
         print(angle)
-        if int(angle) == 90:
+        if round(angle) == 90:
             print('extra')
-            extra_filter(image)
-            result = image
+            # extra_filter(self.image)
         elif 70 <= angle <= 95:
             angle -= 90
-            M = cv2.getRotationMatrix2D(rect[0], angle, 1)
+            m = cv2.getRotationMatrix2D(rect[0], angle, 1)
 
-            result = cv2.warpAffine(image, M, (width, height))
+            result = cv2.warpAffine(self.image, m, (width, height))
+            cv2.imshow('Cropped Image', result)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            self.image = result
         else:
-            M = cv2.getRotationMatrix2D(rect[0], angle, 1)
+            m = cv2.getRotationMatrix2D(rect[0], angle, 1)
 
-            result = cv2.warpAffine(image, M, (width, height))
-        cv2.imshow('Cropped Image', result)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+            result = cv2.warpAffine(self.image, m, (width, height))
+            cv2.imshow('Cropped Image', result)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            self.image = result  # fix
 
-        image = result
-
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    def remove_black_cont(self):
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         _, threshold = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
@@ -107,8 +74,27 @@ for files in os.walk("F_cards"):
 
         x, y, w, h = cv2.boundingRect(max_contour)
 
-        cropped_image = image[y:y+h, x:x+w]
+        self.image = self.image[y:y + h, x:x + w]
 
-        cv2.imshow('Cropped Image', cropped_image)
+    def show(self):
+        cv2.imshow('Image', self.image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+    def filter(self, image):
+        self.image = image
+        self.show()
+        self.remove_extra_colors()
+        self.show()
+        self.cut_back()
+        self.show()
+
+
+if __name__ == "__main__":
+    print(1)
+    F = Filter()
+    for files in os.walk(r"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\F_cards"):
+        for images in files[2]:
+            image_load = cv2.imread(
+                rf"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\F_cards\{images}")
+            F.filter(image_load)
