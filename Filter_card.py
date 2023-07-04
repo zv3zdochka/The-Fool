@@ -29,6 +29,13 @@ class Filter:
         cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
         self.image = cv2.bitwise_and(self.image, mask)
 
+    def problem_rotate(self):
+        self.place_image_in_rectangle()
+        self.show()
+        cv2.imwrite("pr.jpg", self.image)
+        self.rotate()
+        self.show()
+
     # fix a bit
     def rotate(self):
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -43,25 +50,36 @@ class Filter:
         angle = rect[2]
         print(angle)
         if round(angle) == 90:
-            print('extra')
-            # extra_filter(self.image)
+
+            self.problem_rotate()
+
         elif 70 <= angle <= 95:
             angle -= 90
             m = cv2.getRotationMatrix2D(rect[0], angle, 1)
 
             result = cv2.warpAffine(self.image, m, (width, height))
-            cv2.imshow('Cropped Image', result)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
             self.image = result
         else:
             m = cv2.getRotationMatrix2D(rect[0], angle, 1)
 
             result = cv2.warpAffine(self.image, m, (width, height))
-            cv2.imshow('Cropped Image', result)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+
             self.image = result  # fix
+
+    def place_image_in_rectangle(self):
+
+        height, width = self.image.shape[:2]
+
+        new_width = int(width * 1.3)
+        new_height = int(height * 1.3)
+
+        rectangle = np.full((new_height, new_width, 3), (0, 0, 0), dtype=np.uint8)
+
+        x_offset = int((new_width - width) / 2)
+        y_offset = int((new_height - height) / 2)
+
+        rectangle[y_offset:y_offset + height, x_offset:x_offset + width] = self.image
+        self.image = rectangle
 
     def remove_black_cont(self):
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -88,10 +106,11 @@ class Filter:
         self.show()
         self.cut_back()
         self.show()
+        self.rotate()
+        self.show()
 
 
 if __name__ == "__main__":
-    print(1)
     F = Filter()
     for files in os.walk(r"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\F_cards"):
         for images in files[2]:
