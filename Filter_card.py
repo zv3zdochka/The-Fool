@@ -6,6 +6,19 @@ import os
 class Filter:
     def __init__(self):
         self.image = None
+    @staticmethod
+    def remove_close_points(points):
+        distance = 10
+        filtered_points = []
+        for point in points:
+            keep = True
+            for f_point in filtered_points:
+                if abs(point[0] - f_point[0]) <= distance and abs(point[1] - f_point[1]) <= distance:
+                    keep = False
+                    break
+            if keep:
+                filtered_points.append(point)
+        return filtered_points
 
     def remove_extra_colors(self):
         lower_gray = np.array([100, 100, 100], dtype=np.uint8)
