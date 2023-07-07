@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-
+from Find_angle import Angle
 
 class Filter:
     def __init__(self):
@@ -41,12 +41,26 @@ class Filter:
 
         cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
         self.image = cv2.bitwise_and(self.image, mask)
+    @staticmethod
+    def get_coordinates(image):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contour_image = image.copy()
+        cv2.drawContours(contour_image, contours, -1, (0, 255, 0), 2)
+        contour_points = []
+        for contour in contours:
+            for point in contour:
+                contour_points.append(point[0].tolist())
 
+        return contour_points
+    def rotate_for_angle(self):
+        pass
     def problem_rotate(self):
         self.place_image_in_rectangle()
         self.show()
-        cv2.imwrite("pr.jpg", self.image)
-        self.rotate()
+        self.get_coordinates(self.image)
+        self.rotate_for_angle()
         self.show()
 
     # fix a bit
@@ -114,6 +128,7 @@ class Filter:
 
     def filter(self, image):
         self.image = image
+        ang = Angle()
         self.show()
         self.remove_extra_colors()
         self.show()
