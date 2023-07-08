@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
+from math import atan, degrees
 
 
 class Angle:
@@ -12,7 +14,7 @@ class Angle:
         fig, ax = plt.subplots()
 
         x_coords, y_coords = zip(*self.coordinates)
-        ax.plot(x_coords, y_coords, 'r', label='Отрезок')
+        ax.plot(x_coords, y_coords, 'r', label='Point')
 
         ax.legend()
         plt.show()
@@ -30,8 +32,16 @@ class Angle:
 
             vec1 = np.array([x1 - x2, y1 - y2])
             vec2 = np.array([x3 - x2, y3 - y2])
+            norm1 = np.linalg.norm(vec1)
+            norm2 = np.linalg.norm(vec2)
 
-            angle = np.arccos(np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2)))
+            if norm1 != 0 and norm2 != 0:
+                warnings.filterwarnings("ignore", category=RuntimeWarning)
+                angle = np.arccos(np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2)))
+                warnings.filterwarnings("default", category=RuntimeWarning)
+            else:
+                angle = 0
+
             angle_degrees = np.degrees(angle)
             if angle_degrees > 145:
                 mer_list.append((x1, y1))
@@ -70,40 +80,39 @@ class Angle:
         return filtered_points
 
     def select(self):
-        x_coords = [coord[0] for coord in self.coordinates]
-        y_coords = [coord[1] for coord in self.coordinates]
+        coordinates = self.coordinates
+        x_coords, y_coords = zip(*coordinates)
 
-        center_x = sum(x_coords) / len(x_coords)
-        center_y = sum(y_coords) / len(y_coords)
+        avg_y_coords = [(y1 + y2) / 2 for y1, y2 in zip(y_coords[:-1], y_coords[1:])]
 
-        shifted_x = [coord[0] - center_x for coord in self.coordinates]
-        shifted_y = [coord[1] - center_y for coord in self.coordinates]
+        min_avg_y_index = avg_y_coords.index(min(avg_y_coords))
+        point1_index = min_avg_y_index
+        point2_index = min_avg_y_index + 1 if min_avg_y_index < len(coordinates) - 1 else 0
 
-        fig, ax = plt.subplots()
-        ax.scatter(shifted_x, shifted_y)
+        point1 = coordinates[point1_index]
+        point2 = coordinates[point2_index]
 
-        polygon = plt.Polygon(list(zip(shifted_x, shifted_y)), closed=True, fill=None)
-        ax.add_patch(polygon)
+        # plt.figure(figsize=(8, 6))
+        # plt.plot(x_coords, y_coords, '-o', label='Figure')
+        # plt.plot([point1[0], point2[0]], [point1[1], point2[1]], 'r-', label='Selected side')
+        # plt.scatter([point1[0], point2[0]], [point1[1], point2[1]], color='red', label='Selected points')
+        # plt.xlabel('X')
+        # plt.ylabel('Y')
+        # plt.legend()
+        # plt.grid(True)
+        # plt.show()
+        return [point1, point2]
 
-        min_y_index = shifted_y.index(min(shifted_y))
-        lower_edge = [(shifted_x[min_y_index], shifted_y[min_y_index]),
-                      (shifted_x[min_y_index + 1], shifted_y[min_y_index + 1])]
-
-        # print("Lower Edge co:", lower_edge)
-
-        ax.plot([lower_edge[0][0], lower_edge[1][0]], [lower_edge[0][1], lower_edge[1][1]], 'b')
-
-        plt.axis('equal')
-        plt.show()
     @staticmethod
     def calculate_angle(line_co):
-        pass
-
+        x1, y1, x2, y2 = line_co[0][0], line_co[0][1], line_co[1][0], line_co[1][1]
+        ang = atan((y2 - y1) / (x2 - x1))
+        return degrees(ang)
     def do(self, co):
         self.coordinates = self.convert(co)
-        self.draw()
+        self.g_len = None
+        self.end_len = None
         self.coordinates = self.remove_close_points(self.coordinates)
-        self.draw()
         self.end_len = len(self.coordinates)
         while True:
             m_l = self.merge_co()
@@ -112,10 +121,11 @@ class Angle:
             else:
                 self.end_len = len(m_l)
                 self.coordinates = m_l
-                self.draw()
             if self.end_len <= 12:
                 break
-        self.select()
+        lw_co = self.select()
+        ang = self.calculate_angle(lw_co)
+        return ang
 
 
 if __name__ == "__main__":

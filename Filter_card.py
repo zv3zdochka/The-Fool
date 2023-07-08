@@ -3,9 +3,11 @@ import numpy as np
 import os
 from Find_angle import Angle
 
+
 class Filter:
     def __init__(self):
         self.image = None
+        self.angle = Angle()
     @staticmethod
     def remove_close_points(points):
         distance = 10
@@ -41,6 +43,7 @@ class Filter:
 
         cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
         self.image = cv2.bitwise_and(self.image, mask)
+
     @staticmethod
     def get_coordinates(image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -54,14 +57,21 @@ class Filter:
                 contour_points.append(point[0].tolist())
 
         return contour_points
+
     def rotate_for_angle(self):
         pass
+
+
+
     def problem_rotate(self):
         self.place_image_in_rectangle()
         self.show()
-        self.get_coordinates(self.image)
-        self.rotate_for_angle()
-        self.show()
+        cord = self.get_coordinates(self.image)
+        line_ang = self.angle.do(cord)
+        print(line_ang)
+        print("00000000000000000000000000000000000000000000000000")
+        # self.rotate_for_angle()
+        # self.show()
 
     # fix a bit
     def rotate(self):
@@ -81,6 +91,7 @@ class Filter:
             self.problem_rotate()
 
         elif 70 <= angle <= 95:
+            print("ang - 90")
             angle -= 90
             m = cv2.getRotationMatrix2D(rect[0], angle, 1)
 
@@ -128,7 +139,6 @@ class Filter:
 
     def filter(self, image):
         self.image = image
-        ang = Angle()
         self.show()
         self.remove_extra_colors()
         self.show()
