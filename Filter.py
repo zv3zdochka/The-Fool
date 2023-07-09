@@ -92,7 +92,7 @@ class Filters:
         height = int(rect[1][1])
         angle = rect[2]
         #print(angle)
-        if round(angle) == 90:
+        if round(angle) == 0 or round(angle) % 90 == 0:
 
             self.problem_rotate()
 
