@@ -25,17 +25,26 @@ class Rank:
     import numpy as np
 
     def rem_extra_ob(self):
-        gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
-        _, binary_image = cv2.threshold(gray_image, 1, 255, cv2.THRESH_BINARY)
-        black_pixels_mask = np.where(binary_image == 0)
+        lower_gray = np.array([0], dtype=np.uint8)
+        upper_gray = np.array([20], dtype=np.uint8)
+        white = np.array([255], dtype=np.uint8)
+        mask = cv2.inRange(gray, lower_gray, upper_gray)
+        result = cv2.bitwise_and(gray, cv2.bitwise_not(mask))
+        self.image = cv2.add(result, cv2.bitwise_and(mask, white))
 
-        self.image[black_pixels_mask] = (255, 255, 255)
+    def cont(self):
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        edges = cv2.Canny(gray, 100, 200)
+        contour_image = np.zeros_like(self.image)
+        contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cv2.drawContours(contour_image, contours, -1, (0, 255, 0), 2)
 
-        cv2.imwrite("result_image.png", self.image)
-
-
-
+        cv2.imshow('Original Image', self.image)
+        cv2.imshow('Contours', contour_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     def place_in_rect(self):
         height, width = self.image.shape[:2]
@@ -47,18 +56,24 @@ class Rank:
         rectangle[y_offset:y_offset + height, x_offset:x_offset + width] = self.image
         self.image = rectangle
 
-    def crop(self):
-        self.image = self.image[:120, :80]
+    def crop_f(self):
+        self.image = self.image[:95, :58]
 
-    def recog(self, image):
-        self.image = image
-        self.show()
-        self.crop()
-        self.show()
-        self.place_in_rect()
-        self.show()
-        self.rem_extra_ob()
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    def crop_cent(self):
+        height, width = self.image.shape[:2]
+
+        center_x = width // 2
+        center_y = height // 2
+
+        x1 = center_x - 22
+        x2 = center_x + 30
+        y1 = center_y - 42
+        y2 = center_y + 60
+
+        self.image = self.image[y1:y2, x1:x2]
+    def recog(self):
+
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         custom_config = r'-l rus --psm 6'
 
@@ -66,6 +81,16 @@ class Rank:
 
         print(text)
         return text
+
+    def do(self, image):
+        self.image = image
+        self.show()
+        self.crop_f()
+        self.place_in_rect()
+        self.crop_cent()
+        self.place_in_rect()
+        self.show()
+        self.recog()
 
 
 if __name__ == "__main__":
@@ -75,4 +100,4 @@ if __name__ == "__main__":
         for images in files[2]:
             image_load = cv2.imread(
                 rf"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\Problems\{images}")
-            F.recog(image_load)
+            F.do(image_load)
