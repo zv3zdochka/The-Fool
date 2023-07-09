@@ -8,6 +8,7 @@ class Filter:
     def __init__(self):
         self.image = None
         self.angle = Angle()
+
     @staticmethod
     def remove_close_points(points):
         distance = 10
@@ -58,10 +59,18 @@ class Filter:
 
         return contour_points
 
-    def rotate_for_angle(self):
-        pass
+    def rotate_image(self, angle):
 
+        height, width = self.image.shape[:2]
+        center = (width / 2, height / 2)
 
+        rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+
+        rotated_image = cv2.warpAffine(self.image, rotation_matrix, (width, height))
+        cv2.imshow('Rotated Image', rotated_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        self.image = rotated_image
 
     def problem_rotate(self):
         self.place_image_in_rectangle()
@@ -70,8 +79,7 @@ class Filter:
         line_ang = self.angle.do(cord)
         print(line_ang)
         print("00000000000000000000000000000000000000000000000000")
-        # self.rotate_for_angle()
-        # self.show()
+        self.rotate_image(line_ang)
 
     # fix a bit
     def rotate(self):
@@ -145,6 +153,8 @@ class Filter:
         self.cut_back()
         self.show()
         self.rotate()
+        self.show()
+        self.remove_black_cont()
         self.show()
 
 
