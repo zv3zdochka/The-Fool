@@ -4,7 +4,8 @@ import os
 from Find_angle import Angle
 
 
-class Filter:
+class Filters:
+
     def __init__(self):
         self.image = None
         self.angle = Angle()
@@ -147,10 +148,10 @@ class Filter:
         self.cut_back()
         self.rotate()
         self.remove_black_cont()
-
+        return self.image
 
 if __name__ == "__main__":
-    F = Filter()
+    F = Filters()
     for files in os.walk(r"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\F_cards"):
         for images in files[2]:
             image_load = cv2.imread(

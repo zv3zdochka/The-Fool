@@ -121,7 +121,7 @@ class Angle:
             else:
                 self.end_len = len(m_l)
                 self.coordinates = m_l
-            if self.end_len <= 10:
+            if self.end_len <= 17:
                 break
         lw_co = self.select()
         ang = self.calculate_angle(lw_co)

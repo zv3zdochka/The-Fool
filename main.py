@@ -1,10 +1,12 @@
 import asyncio
+import random
 import time
 import cv2
 from Contur import ScreenContur
-from Rank_recog import Rank
-from Suit_recog import Suit
+from Rank import Rank
+from Suit import Suit
 from Event import Event
+from Filter import Filters
 
 
 class Play:
@@ -12,8 +14,9 @@ class Play:
         self.recog = ScreenContur()  # Recognizer
         self.rank = Rank()
         self.suit = Suit()
-        self.player = ""
+        self.filt = Filters()
         self.event = Event()
+        self.player = ""
         self.instructions = []
         self.found_cards = []
         self.my_cards = []
@@ -21,7 +24,9 @@ class Play:
     def what_card(self):
         for i in self.found_cards:
             coords, image = i[0], i[1]
-
+            im_for_rc = self.filt.filter(image)
+            cv2.imwrite(rf"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\Problems\{random.randrange(0,1000)}.jpg", im_for_rc)
+            #self.rank.recog_rank(im_for_rc)
 
     async def is_changes(self):
         if self.event.smt_happened():
@@ -30,7 +35,7 @@ class Play:
 
     async def play(self):
         self.found_cards = self.recog.run()
-        #print(self.found_cards)
+        # print(self.found_cards)
         self.what_card()
 
     async def play_fool(self):
