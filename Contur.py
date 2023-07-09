@@ -3,7 +3,7 @@ import random
 import cv2
 import numpy as np
 import mss
-from Rank_recog import Rank
+
 
 class ScreenContur:
     def __init__(self):
@@ -34,6 +34,7 @@ class ScreenContur:
         self.co_list = []
         self.reg_cards = []
         self.result = []
+
     def capture_screen(self):
         with mss.mss() as sct:
             monitor = sct.monitors[1]
@@ -103,22 +104,16 @@ class ScreenContur:
                     if roi_x <= x <= roi_x + roi_w and roi_y <= y <= roi_y + roi_h:
                         self.reg_cards.append([(x, y, w, h), image[y:y + h, x:x + w]])
                         self.co_list.append((x, y, w, h))
-                        cv2.imwrite(f'F_cards/output_image{random.randrange(0, 1000)}.jpg', image[y:y + h, x:x + w])
-                        #print(rank.recog_rank(image[y:y + h, x:x + w]))
-                        # cv2.imshow('Изображение', image[y:y + h, x:x + w])
-                        # cv2.waitKey(0)
-                        # cv2.destroyAllWindows()
-
-
+                        # cv2.imwrite(f'F_cards/output_image{random.randrange(0, 1000)}.jpg', image[y:y + h, x:x + w])
 
         self.result = self.remove_nested_quads(self.co_list)
         self.remove_unwanted_reg_cards()
-        #return self.reg_cards
-        return self.result
+        return self.reg_cards
 
 
     def ret_ima_co(self):
         return self.reg_cards
+
     def run(self):
         # Capture screen image
         image = self.capture_screen()
@@ -128,4 +123,3 @@ class ScreenContur:
 if __name__ == "__main__":
     screen_contour = ScreenContur()
     result = screen_contour.run()
-

@@ -92,15 +92,15 @@ class Angle:
         point1 = coordinates[point1_index]
         point2 = coordinates[point2_index]
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(x_coords, y_coords, '-o', label='Figure')
-        plt.plot([point1[0], point2[0]], [point1[1], point2[1]], 'r-', label='Selected side')
-        plt.scatter([point1[0], point2[0]], [point1[1], point2[1]], color='red', label='Selected points')
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        # plt.figure(figsize=(8, 6))
+        # plt.plot(x_coords, y_coords, '-o', label='Figure')
+        # plt.plot([point1[0], point2[0]], [point1[1], point2[1]], 'r-', label='Selected side')
+        # plt.scatter([point1[0], point2[0]], [point1[1], point2[1]], color='red', label='Selected points')
+        # plt.xlabel('X')
+        # plt.ylabel('Y')
+        # plt.legend()
+        # plt.grid(True)
+        # plt.show()
         return [point1, point2]
 
     @staticmethod
@@ -112,24 +112,14 @@ class Angle:
         self.coordinates = self.convert(co)
         self.g_len = None
         self.end_len = None
-        self.draw()
-
-
-        self.coordinates.append(self.coordinates[0])# close contur
-
-
-
         self.coordinates = self.remove_close_points(self.coordinates)
-        self.draw()
         self.end_len = len(self.coordinates)
         while True:
             m_l = self.merge_co()
-            self.draw()
             if len(m_l) == self.end_len:
                 break
             else:
                 self.end_len = len(m_l)
-                self.draw()
                 self.coordinates = m_l
             if self.end_len <= 10:
                 break

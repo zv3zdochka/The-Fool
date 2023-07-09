@@ -67,18 +67,15 @@ class Filter:
         rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
 
         rotated_image = cv2.warpAffine(self.image, rotation_matrix, (width, height))
-        cv2.imshow('Rotated Image', rotated_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         self.image = rotated_image
 
     def problem_rotate(self):
         self.place_image_in_rectangle()
-        self.show()
         cord = self.get_coordinates(self.image)
         line_ang = self.angle.do(cord)
-        print(line_ang)
-        print("00000000000000000000000000000000000000000000000000")
+        #print(line_ang)
         self.rotate_image(line_ang)
 
     # fix a bit
@@ -93,13 +90,12 @@ class Filter:
         width = int(rect[1][0])
         height = int(rect[1][1])
         angle = rect[2]
-        print(angle)
+        #print(angle)
         if round(angle) == 90:
 
             self.problem_rotate()
 
         elif 70 <= angle <= 95:
-            print("ang - 90")
             angle -= 90
             m = cv2.getRotationMatrix2D(rect[0], angle, 1)
 
@@ -147,15 +143,10 @@ class Filter:
 
     def filter(self, image):
         self.image = image
-        self.show()
         self.remove_extra_colors()
-        self.show()
         self.cut_back()
-        self.show()
         self.rotate()
-        self.show()
         self.remove_black_cont()
-        self.show()
 
 
 if __name__ == "__main__":
