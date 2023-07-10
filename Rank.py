@@ -18,11 +18,8 @@ class Rank:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    def save(self, di=f'Ranks\im{random.randrange(0, 10000)}.jpg'):
-        cv2.imwrite(di, self.image)
-
-    import cv2
-    import numpy as np
+    def save(self):
+        cv2.imwrite(f'Ranks\im_{random.randrange(0, 10000)}.jpg', self.image)
 
     def rem_extra_ob(self):
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -71,16 +68,13 @@ class Rank:
         y2 = center_y + 60
 
         self.image = self.image[y1:y2, x1:x2]
+
     def recog(self):
-
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        _, threshold = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-        custom_config = r'-l rus --psm 6'
-
-        text = pytesseract.image_to_string(gray, config=custom_config)
-
-        print(text)
-        return text
+        result = pytesseract.image_to_string(threshold, config='--psm 7 -c tessedit_char_whitelist=0123456789ВДКТ')
+        print(result)
 
     def do(self, image):
         self.image = image
@@ -88,6 +82,7 @@ class Rank:
         self.crop_f()
         self.place_in_rect()
         self.crop_cent()
+        self.save()
         self.place_in_rect()
         self.show()
         self.recog()
