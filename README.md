@@ -21,9 +21,10 @@ To get started with the project, follow these steps:
 2. Install all libraries and follow all steps from official sites.
 
 ## Card and Event Recognition
-pupupuup
+We made dataset from cards and start model learning. 
+
 ## AI Player
-pupuuppupu
+A few moments later.....
 
 ## Timeline
 1. Add cards finder.
