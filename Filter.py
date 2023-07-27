@@ -148,6 +148,7 @@ class Filters:
         self.cut_back()
         self.rotate()
         self.remove_black_cont()
+        self.show()
         return self.image
 
 if __name__ == "__main__":

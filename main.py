@@ -22,11 +22,15 @@ class Play:
         self.my_cards = []
 
     def what_card(self):
+        if not self.found_cards:
+            print('No cards what card func')
         for i in self.found_cards:
             coords, image = i[0], i[1]
+
             im_for_rc = self.filt.filter(image)
-            cv2.imwrite(rf"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\Problems\{random.randrange(0,1000)}.jpg", im_for_rc)
-            #self.rank.recog_rank(im_for_rc)
+            #cv2.imshow("im", im_for_rc)
+            #cv2.imwrite(rf"C:\Users\batsi\OneDrive\Documents\PycharmProjects\The_Fool_Game\Problems\{random.randrange(0,1000)}.jpg", im_for_rc)
+            self.rank.do(im_for_rc)
 
     async def is_changes(self):
         if self.event.smt_happened():
@@ -35,7 +39,6 @@ class Play:
 
     async def play(self):
         self.found_cards = self.recog.run()
-        # print(self.found_cards)
         self.what_card()
 
     async def play_fool(self):

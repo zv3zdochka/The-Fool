@@ -108,6 +108,8 @@ class ScreenContur:
 
         self.result = self.remove_nested_quads(self.co_list)
         self.remove_unwanted_reg_cards()
+
+
         return self.reg_cards
 
 
@@ -117,6 +119,7 @@ class ScreenContur:
     def run(self):
         # Capture screen image
         image = self.capture_screen()
+        #print(self.process_screen(image))
         return self.process_screen(image)
 
 

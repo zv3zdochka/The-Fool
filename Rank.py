@@ -1,12 +1,9 @@
 import random
-
 import cv2
-import pytesseract
 import os
 import numpy as np
 
-path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-pytesseract.tesseract_cmd = path_to_tesseract
+
 
 
 class Rank:
@@ -19,7 +16,7 @@ class Rank:
         cv2.destroyAllWindows()
 
     def save(self):
-        cv2.imwrite(f'Ranks\im_{random.randrange(0, 10000)}.jpg', self.image)
+        cv2.imwrite(f'Problems\im_{random.randrange(0, 100000)}.jpg', self.image)
 
     def rem_extra_ob(self):
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -54,7 +51,7 @@ class Rank:
         self.image = rectangle
 
     def crop_f(self):
-        self.image = self.image[:95, :58]
+        self.image = self.image[:145, :85]
 
     def crop_cent(self):
         height, width = self.image.shape[:2]
@@ -62,30 +59,40 @@ class Rank:
         center_x = width // 2
         center_y = height // 2
 
-        x1 = center_x - 22
-        x2 = center_x + 30
-        y1 = center_y - 42
-        y2 = center_y + 60
+        x1 = center_x - 35
+        x2 = center_x + 40
+        y1 = center_y - 55
+        y2 = center_y + 80
 
         self.image = self.image[y1:y2, x1:x2]
 
-    def recog(self):
-        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        _, threshold = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    def crop_for_rank(self):
+        height, width = self.image.shape[:2]
 
-        result = pytesseract.image_to_string(threshold, config='--psm 7 -c tessedit_char_whitelist=0123456789ВДКТ')
-        print(result)
+        center_x = width // 2
+        center_y = height // 2
+
+        x1 = center_x - 35
+        x2 = center_x + 40
+        y1 = center_y - 85
+        y2 = center_y + 80
+
+        self.image = self.image[y1:y2, x1:x2]
 
     def do(self, image):
         self.image = image
-        self.show()
         self.crop_f()
+
         self.place_in_rect()
+
         self.crop_cent()
-        self.save()
+
         self.place_in_rect()
+
         self.show()
-        self.recog()
+        self.crop_for_rank()
+        self.show()
+        self.save()
 
 
 if __name__ == "__main__":
